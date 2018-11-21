@@ -1,0 +1,20 @@
+mappings:
+  CalendarTimeField: Unclecheese\EventCalendar\CalendarTimeField
+  CachedCalendarTask: Unclecheese\EventCalendar\CachedCalendarTask
+  RecurringException: Unclecheese\EventCalendar\RecurringException
+  CalendarUtil: Unclecheese\EventCalendar\CalendarUtil
+  CalendarWidget: Unclecheese\EventCalendar\CalendarWidget
+  RecurringDayOfWeek: Unclecheese\EventCalendar\RecurringDayOfWeek
+  CalendarAnnouncement: Unclecheese\EventCalendar\CalendarAnnouncement
+  ICSFeed: Unclecheese\EventCalendar\ICSFeed
+  CachedCalendarBuildTask: Unclecheese\EventCalendar\CachedCalendarBuildTask
+  ICSWriter: Unclecheese\EventCalendar\ICSWriter
+  RecurringDayOfMonth: Unclecheese\EventCalendar\RecurringDayOfMonth
+  Calendar: Unclecheese\EventCalendar\Calendar
+  Calendar_Controller: Unclecheese\EventCalendar\Calendar_Controller
+  CalendarDateTime: Unclecheese\EventCalendar\CalendarDateTime
+  CachedCalendarEntry: Unclecheese\EventCalendar\CachedCalendarEntry
+  RecursionReader: Unclecheese\EventCalendar\RecursionReader
+  iCal: Unclecheese\EventCalendar\iCal
+  CalendarEvent: Unclecheese\EventCalendar\CalendarEvent
+  CalendarEvent_Controller: Unclecheese\EventCalendar\CalendarEvent_Controller

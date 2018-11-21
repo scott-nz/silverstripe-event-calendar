@@ -1,5 +1,13 @@
 <?php
 
+namespace Unclecheese\EventCalendar;
+
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\TextareaField;
+use Unclecheese\EventCalendar\Calendar;
+
+
+
 class CalendarAnnouncement extends CalendarDateTime {
 
 	private static $db = array (
@@ -8,22 +16,22 @@ class CalendarAnnouncement extends CalendarDateTime {
 	);
 
 	private static $has_one = array (
-		'Calendar' => 'Calendar'
+		'Calendar' => Calendar::class
 	);
 
 	public function getCMSFields() {
-		
+
 		$self = $this;
-		
+
 		$this->beforeUpdateCMSFields(function($f) use ($self) {
-			
+
 			$f->insertBefore(new TextField('Title', _t('CalendarAnnouncement.TITLE','Title of announcement')), "StartDate");
 			$f->insertBefore(new TextareaField('Content', _t('CalendarAnnouncement.CONTENT','Announcement content')), "StartDate");
 
 		});
-		
+
 		$f = parent::getCMSFields();
-		
+
 		return $f;
 	}
 
@@ -37,7 +45,7 @@ class CalendarAnnouncement extends CalendarDateTime {
 				'FormattedAllDay' => _t('Calendar.ALLDAY','All day'),
 		);
 	}
-	
+
 	public function getTitle() {
 		return $this->getField('Title');
 	}

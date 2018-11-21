@@ -1,7 +1,29 @@
 <?php
 
+namespace Unclecheese\EventCalendar;
+
+use Page;
+use SilverStripe\View\Requirements;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\OptionsetField;
+use SilverStripe\Forms\FieldGroup;
+use SilverStripe\Forms\LabelField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\CheckboxSetField;
+use SilverStripe\ORM\DataList;
+use Page_Controller;
+use Unclecheese\EventCalendar\CalendarDateTime;
+use Unclecheese\EventCalendar\RecurringException;
+use Unclecheese\EventCalendar\RecurringDayOfWeek;
+use Unclecheese\EventCalendar\RecurringDayOfMonth;
+
+
+
 class CalendarEvent extends Page {
-	
+
 	private static $db = array (
 		'Location' => 'Text',
 		'Recursion' => 'Boolean',
@@ -14,43 +36,43 @@ class CalendarEvent extends Page {
 		'MonthlyIndex' => 'Int',
 		'MonthlyDayOfWeek' => 'Int'
 	);
-	
+
 	private static $has_many = array (
-		'DateTimes' => 'CalendarDateTime',
-		'Exceptions' => 'RecurringException'
-	);
-	
-	private static $many_many = array (
-		'RecurringDaysOfWeek' => 'RecurringDayOfWeek',
-		'RecurringDaysOfMonth' => 'RecurringDayOfMonth'
+		'DateTimes' => CalendarDateTime::class,
+		'Exceptions' => RecurringException::class
 	);
 
-	private static $icon = "event_calendar/images/event";	
+	private static $many_many = array (
+		'RecurringDaysOfWeek' => RecurringDayOfWeek::class,
+		'RecurringDaysOfMonth' => RecurringDayOfMonth::class
+	);
+
+	private static $icon = "event_calendar/images/event";
 
 	private static $description = "An individual event entry";
 
-	private static $datetime_class = "CalendarDateTime";
-	
+	private static $datetime_class = CalendarDateTime::class;
+
 	private static $can_be_root = false;
 
 	public function getCMSFields() {
-		
+
 		$self = $this;
-		
+
 		$this->beforeUpdateCMSFields(function($f) use ($self) {
 			Requirements::javascript('event_calendar/javascript/calendar_cms.js');
 			Requirements::css('event_calendar/css/calendar_cms.css');
-			
+
 			$f->addFieldToTab("Root.Main",
 				TextField::create(
 					"Location",
 					_t('Calendar.LOCATIONDESCRIPTION','The location for this event')
 				), 'Content'
 			);
-			
+
 			$dt = _t('CalendarEvent.DATESANDTIMES','Dates and Times');
 			$recursion = _t('CalendarEvent.RECURSION','Recursion');
-		
+
 			$f->addFieldToTab("Root.$dt",
 				GridField::create(
 					"DateTimes",
@@ -72,25 +94,25 @@ class CalendarEvent extends Page {
 					)
 				)->setHasEmptyDefault(true)
 			));
-		
+
 			$f->addFieldToTab("Root.$recursion", $dailyInterval = FieldGroup::create(
 				LabelField::create($name = "every1", $title = _t("CalendarEvent.EVERY","Every ")),
 				DropdownField::create('DailyInterval', '', array_combine(range(1,10), range(1,10))),
 				LabelField::create($name = "days",$title = _t("CalendarEvent.DAYS"," day(s)"))
 			));
-		
+
 			$f->addFieldToTab("Root.$recursion", $weeklyInterval = FieldGroup::create(
 				LabelField::create($name = "every2", $title = _t("CalendarEvent.EVERY","Every ")),
 				DropdownField::create('WeeklyInterval', '', array_combine(range(1,10), range(1,10))),
 				LabelField::create($name = "weeks", $title = _t("CalendarEvent.WEEKS", " weeks"))
 			));
-		
+
 			$f->addFieldToTab("Root.$recursion", CheckboxSetField::create(
-				'RecurringDaysOfWeek', 
+				'RecurringDaysOfWeek',
 				_t('CalendarEvent.ONFOLLOWINGDAYS','On the following day(s)...'),
-				DataList::create("RecurringDayOfWeek")->map("ID", "Title")
+				DataList::create(RecurringDayOfWeek::class)->map("ID", "Title")
 			));
-		
+
 			$f->addFieldToTab("Root.$recursion", $monthlyInterval = FieldGroup::create(
 				LabelField::create($name="every3", $title = _t("CalendarEvent.EVERY", "Every ")),
 				DropdownField::create('MonthlyInterval', '', array_combine(range(1,10), range(1,10))),
@@ -99,7 +121,7 @@ class CalendarEvent extends Page {
 
 			$f->addFieldsToTab("Root.$recursion", array (
 				OptionsetField::create('MonthlyRecursionType1','', array('1' => _t('CalendarEvent.ONTHESEDATES','On these date(s)...')))->setHasEmptyDefault(true),
-				CheckboxSetField::create('RecurringDaysOfMonth', '', DataList::create("RecurringDayOfMonth")->map("ID", "Value")),
+				CheckboxSetField::create('RecurringDaysOfMonth', '', DataList::create(RecurringDayOfMonth::class)->map("ID", "Value")),
 				OptionsetField::create('MonthlyRecursionType2','', array('1' => _t('CalendarEvent.ONTHE','On the...')))->setHasEmptyDefault(true)
 			));
 
@@ -111,7 +133,7 @@ class CalendarEvent extends Page {
 					'4' => _t('CalendarEvent.FOURTH', 'Fourth'),
 					'5' => _t('CalendarEvent.LAST', 'Last')
 				))->setHasEmptyDefault(true),
-				DropdownField::create('MonthlyDayOfWeek','', DataList::create('RecurringDayOfWeek')->map('Value', 'Title'))->setHasEmptyDefault(true),
+				DropdownField::create('MonthlyDayOfWeek','', DataList::create(RecurringDayOfWeek::class)->map('Value', 'Title'))->setHasEmptyDefault(true),
 				LabelField::create( $name = "ofthemonth", $title = _t("CalendarEvent.OFTHEMONTH"," of the month."))
 			));
 			$f->addFieldToTab("Root.$recursion",
@@ -128,9 +150,9 @@ class CalendarEvent extends Page {
 			$monthlyIndex->addExtraClass('monthlyindex');
 
 		});
-		
+
 		$f = parent::getCMSFields();
-		
+
 		return $f;
 	}
 
@@ -154,20 +176,20 @@ class CalendarEvent_Controller extends Page_Controller {
 		parent::init();
 		Requirements::themedCSS('calendar','event_calendar');
 	}
-	
+
 	public function MultipleDates() {
 		return DataList::create($this->data()->getDateTimeClass())
 			->filter("EventID", $this->ID)
 			->sort("\"StartDate\" ASC")
 			->count() > 1;
 	}
-	
+
 	public function DateAndTime() {
 		return DataList::create($this->data()->getDateTimeClass())
 			->filter("EventID", $this->ID)
 			->sort("\"StartDate\" ASC");
 	}
-	
+
 	public function UpcomingDates($limit = 3) {
 		return DataList::create($this->data()->getDateTimeClass())
 			->filter("EventID", $this->ID)
@@ -175,7 +197,7 @@ class CalendarEvent_Controller extends Page_Controller {
 			->sort("\"StartDate\" ASC")
 			->limit($limit);
 	}
-	
+
 	public function OtherDates() {
 		if(!isset($_REQUEST['date'])) {
 			$date_obj =  $this->DateAndTime()->first();
@@ -185,7 +207,7 @@ class CalendarEvent_Controller extends Page_Controller {
 		elseif(strtotime($_REQUEST['date']) > 0) {
 			$date = date('Y-m-d', strtotime($_REQUEST['date']));
 		}
-		
+
 		$cal = $this->Parent();
 
 		if($this->Recursion == 1) {
@@ -210,7 +232,7 @@ class CalendarEvent_Controller extends Page_Controller {
 	}
 
 
-	
+
 	public function CurrentDate() {
 		$allDates = DataList::create($this->data()->getDateTimeClass())
 			->filter("EventID", $this->ID)

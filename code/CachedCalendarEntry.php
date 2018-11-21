@@ -1,8 +1,14 @@
 <?php
 
+namespace Unclecheese\EventCalendar;
+
+use SilverStripe\ORM\DataObject;
+
+
+
 class CachedCalendarEntry extends DataObject {
 
-	 private static $db = array (		
+	 private static $db = array (
 		'StartDate' => 'Date',
 		'StartTime' => 'Time',
 		'EndDate' => 'Date',
@@ -17,11 +23,11 @@ class CachedCalendarEntry extends DataObject {
 	);
 
 	private static $has_one = array (
-		'CachedCalendar' => 'Calendar',
-		'Calendar' => 'Calendar',
-		'Event' => 'CalendarEvent'
+		'CachedCalendar' => Calendar::class,
+		'Calendar' => Calendar::class,
+		'Event' => CalendarEvent::class
 	);
-	
+
 	private static $default_sort = "StartDate ASC, StartTime ASC";
 
 	public static function create_from_datetime(CalendarDateTime $dt, Calendar $calendar) {
@@ -33,7 +39,7 @@ class CachedCalendarEntry extends DataObject {
 	public static function create_from_announcement(CalendarAnnouncement $dt, Calendar $calendar) {
 		$cached = CachedCalendarEntry::create();
 		$cached->hydrate($dt, $calendar);
-		$cached->CalendarID = $dt->CalendarID;		
+		$cached->CalendarID = $dt->CalendarID;
 		$cached->Announcement = 1;
 		return $cached;
 	}
@@ -42,10 +48,10 @@ class CachedCalendarEntry extends DataObject {
 		if($this->Announcement) {
 			return false;
 		}
-		
+
 		return CachedCalendarEntry::get()
 			->filter(array(
-				"EventID" => $this->EventID				
+				"EventID" => $this->EventID
 			))
 			->exclude(array(
 				"StartDate" => $this->StartDate

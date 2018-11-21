@@ -1,7 +1,19 @@
 <?php
 
-class RecursionReader extends Object {
-	
+namespace Unclecheese\EventCalendar;
+
+use SilverStripe\ORM\DataList;
+use Altumo\Utils\sfDate\sfDate;
+use SilverStripe\Core\Extensible;
+use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Config\Configurable;
+
+
+class RecursionReader{
+    use Extensible;
+    use Injectable;
+    use Configurable;
+
 	const DAY = 86400;
 
 	const WEEK = 604800;
@@ -9,7 +21,7 @@ class RecursionReader extends Object {
 	protected $event, $datetimeClass, $eventClass, $ts;
 
 	protected $allowedDaysOfWeek = array ();
-	
+
 	protected $allowedDaysOfMonth = array ();
 
 	protected $exceptions = array ();
@@ -23,7 +35,7 @@ class RecursionReader extends Object {
 		$this->datetimeClass = $event->Parent()->getDateTimeClass();
 		$this->eventClass = $event->Parent()->getEventClass();
 		$relation = $event->Parent()->getDateToEventRelation();
-	
+
 		if($datetime = DataList::create($this->datetimeClass)->where("{$relation} = {$event->ID}")->first()) {
 			$this->ts = strtotime($datetime->StartDate);
 		}
@@ -35,19 +47,19 @@ class RecursionReader extends Object {
 				}
 			}
 		}
-		
+
 		else if($event->CustomRecursionType == 3) {
 			if($days_of_month = $event->getManyManyComponents('RecurringDaysOfMonth')) {
 				foreach($days_of_month as $day) {
 					$this->allowedDaysOfMonth[] = $day->Value;
 				}
-			}		
+			}
 		}
-				
+
 		if($exceptions = $event->getComponents('Exceptions')) {
 			foreach($exceptions as $exception) {
 				$this->exceptions[] = $exception->ExceptionDate;
-			}			
+			}
 		}
 	}
 
@@ -58,13 +70,13 @@ class RecursionReader extends Object {
 
 		$objTestDate = new sfDate($ts);
 		$objStartDate = new sfDate($this->ts);
-		
+
 		// Current date is before the recurring event begins.
 		if($objTestDate->get() < $objStartDate->get())
 			return false;
 		elseif(in_array($objTestDate->date(), $this->exceptions))
 			return false;
-		
+
 		switch($this->event->CustomRecursionType)
 		{
 			// Daily
@@ -75,7 +87,7 @@ class RecursionReader extends Object {
 			case 2:
 				return ((($objTestDate->firstDayOfWeek()->get() - $objStartDate->firstDayOfWeek()->get()) / self::WEEK) % $this->event->WeeklyInterval == 0)
 						&&
-					   (in_array($objTestDate->reset()->format('w'), $this->allowedDaysOfWeek));							
+					   (in_array($objTestDate->reset()->format('w'), $this->allowedDaysOfWeek));
 			break;
 			// Monthly
 			case 3:
@@ -87,7 +99,7 @@ class RecursionReader extends Object {
 					// e.g. "First Monday of the month"
 					elseif($this->event->MonthlyRecursionType2 == 1) {
 						// Last day of the month?
-						if($this->event->MonthlyIndex == 5) {							
+						if($this->event->MonthlyIndex == 5) {
 							$targetDate = $objTestDate->addMonth()->firstDayOfMonth()->previousDay($this->event->MonthlyDayOfWeek)->dump();
 						}
 						else {
@@ -98,8 +110,8 @@ class RecursionReader extends Object {
 							$targetDate = $objTestDate->dump();
 						}
 						return $objTestDate->reset()->dump() == $targetDate;
-					}				
-				}				
+					}
+				}
 				return false;
 		}
 	}

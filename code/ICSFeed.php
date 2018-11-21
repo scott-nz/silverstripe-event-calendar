@@ -1,14 +1,23 @@
 <?php
 
+namespace Unclecheese\EventCalendar;
+
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\TextField;
+use Unclecheese\EventCalendar\Calendar;
+
+
+
 class ICSFeed extends DataObject {
-	
+
 	private static $db = array (
 		'Title' => 'Varchar(100)',
 		'URL' => 'Varchar(255)'
 	);
 
 	private static $has_one = array (
-		'Calendar' => 'Calendar'
+		'Calendar' => Calendar::class
 	);
 
 	public function getCMSFields() {
@@ -21,10 +30,10 @@ class ICSFeed extends DataObject {
 
 		return $f;
 	}
-	
+
 	public function summaryFields() {
 		return array (
 				'Title' => _t('ICSFeed.TITLE','Title'),
 		);
-	}	
+	}
 }

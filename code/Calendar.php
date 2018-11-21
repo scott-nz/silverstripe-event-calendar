@@ -1,5 +1,36 @@
 <?php
 
+namespace Unclecheese\EventCalendar;
+
+use Page;
+use SilverStripe\View\Requirements;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\NumericField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\CheckboxSetField;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\DataList;
+use Altumo\Utils\sfDate\sfDate;
+use DateTime;
+use DateTimezone;
+use SilverStripe\Control\Controller;
+use Page_Controller;
+use SilverStripe\Control\RSS\RSSFeed;
+use Altumo\Utils\sfDate\sfTime;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTP;
+use SilverStripe\Core\Convert;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\FormAction;
+
+
+
 class Calendar extends Page {
 
 	private static $db = array(
@@ -12,20 +43,20 @@ class Calendar extends Page {
 	);
 
 	private static $has_many = array (
-		'Announcements' => 'CalendarAnnouncement',
-		'Feeds' => 'ICSFeed'
+		'Announcements' => CalendarAnnouncement::class,
+		'Feeds' => ICSFeed::class
 	);
 
 	private static $many_many = array (
-		'NestedCalendars' => 'Calendar'
+		'NestedCalendars' => Calendar::class
 	);
 
 	private static $belongs_many_many = array (
-		'ParentCalendars' => 'Calendar'
+		'ParentCalendars' => Calendar::class
 	);
 
 	private static $allowed_children = array (
-		'CalendarEvent'
+		CalendarEvent::class
 	);
 
 	private static $defaults = array (
@@ -42,9 +73,9 @@ class Calendar extends Page {
 
 	private static $description = "A collection of Calendar Events";
 
-	private static $event_class = "CalendarEvent";
+	private static $event_class = CalendarEvent::class;
 
-	private static $announcement_class = "CalendarAnnouncement";
+	private static $announcement_class = CalendarAnnouncement::class;
 
 	private static $timezone = "America/New_York";
 
@@ -172,7 +203,7 @@ class Calendar extends Page {
 	}
 
 	public function getEventList($start, $end, $filter = null, $limit = null, $announcement_filter = null) {
-		if(Config::inst()->get("Calendar", "caching_enabled")) {
+		if(Config::inst()->get(Calendar::class, "caching_enabled")) {
 			return $this->getCachedEventList($start, $end, $filter, $limit);
 		}
 
@@ -445,7 +476,7 @@ class Calendar extends Page {
 	public function CalendarWidget() {
 		$calendar = CalendarWidget::create($this);
 		$controller = Controller::curr();
-		if($controller->class == "Calendar_Controller" || is_subclass_of($controller, "Calendar_Controller")) {
+		if($controller->class == Calendar_Controller::class || is_subclass_of($controller, Calendar_Controller::class)) {
 			if($controller->getView() != "default") {
 				if($startDate = $controller->getStartDate()) {
 					$calendar->setOption('start', $startDate->format('Y-m-d'));
@@ -460,7 +491,7 @@ class Calendar extends Page {
 
 	public function MonthJumpForm() {
 		$controller = Controller::curr();
-		if($controller->class == "Calendar_Controller" || is_subclass_of($controller, "Calendar_Controller")) {
+		if($controller->class == Calendar_Controller::class || is_subclass_of($controller, Calendar_Controller::class)) {
 			return Controller::curr()->MonthJumpForm();
 		}
 		$c = new Calendar_Controller($this);
@@ -572,7 +603,7 @@ class Calendar_Controller extends Page_Controller {
 		return array();
 	}
 
-	public function index(SS_HTTPRequest $r) {
+	public function index(HTTPRequest $r) {
 		$this->extend('index',$r);
 		switch($this->DefaultView) {
 			case "month":
@@ -616,28 +647,28 @@ class Calendar_Controller extends Page_Controller {
 		}
 	}
 
-	public function today(SS_HTTPRequest $r) {
+	public function today(HTTPRequest $r) {
 		$this->setTodayView();
 		return $this->respond();
 	}
 
-	public function week(SS_HTTPRequest $r) {
+	public function week(HTTPRequest $r) {
 		$this->setWeekView();
 		return $this->respond();
 	}
 
-	public function weekend(SS_HTTPRequest $r) {
+	public function weekend(HTTPRequest $r) {
 		$this->setWeekendView();
 		return $this->respond();
 	}
 
 
-	public function month(SS_HTTPRequest $r) {
+	public function month(HTTPRequest $r) {
 		$this->setMonthView();
 		return $this->respond();
 	}
 
-	public function show(SS_HTTPRequest $r) {
+	public function show(HTTPRequest $r) {
 		$this->parseURL($r);
 		return $this->respond();
 	}
@@ -668,7 +699,7 @@ class Calendar_Controller extends Page_Controller {
 		return $this->getResponse();
 	}
 
-	public function monthjson(SS_HTTPRequest $r) {
+	public function monthjson(HTTPRequest $r) {
 		if(!$r->param('ID')) return false;
 
         //Increase the per page limit to 500 as the AJAX request won't look for further pages
@@ -709,7 +740,7 @@ class Calendar_Controller extends Page_Controller {
 		$writer->sendDownload();
 	}
 
-	public function ics(SS_HTTPRequest $r) {
+	public function ics(HTTPRequest $r) {
 		$feed = false;
 		$announcement = false;
 		$id = $r->param('ID');
@@ -785,7 +816,7 @@ class Calendar_Controller extends Page_Controller {
 		}
 	}
 
-	public function parseURL(SS_HTTPRequest $r) {
+	public function parseURL(HTTPRequest $r) {
 		if(!$r->param('ID')) return;
 		$this->startDate = sfDate::getInstance(CalendarUtil::get_date_from_string($r->param('ID')));
 		if($r->param('OtherID')) {

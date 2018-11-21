@@ -1,10 +1,27 @@
 <?php
 
-class CachedCalendarTask extends HourlyTask {
+namespace Unclecheese\EventCalendar;
+
+use SilverStripe\CronTask\Interfaces\CronTask;
+use SilverStripe\ORM\DB;
+use Altumo\Utils\sfDate\sfDate;
+use SilverStripe\Core\Environment;
+
+
+class CachedCalendarTask implements CronTask {
+    /**
+     * run this task every 5 minutes
+     *
+     * @return string
+     */
+    public function getSchedule()
+    {
+        return "0 * * * *";
+    }
 
 	public function process() {
-		increase_time_limit_to(300);
-		DB::query("DELETE FROM CachedCalendarEntry");
+        Environment::increaseTimeLimitTo(300);
+        DB::query("DELETE FROM CachedCalendarEntry");
 		$future_years = $this->config()->cache_future_years;
 		foreach(Calendar::get() as $calendar) {
 			echo "<h2>Caching calendar '$calendar->Title'</h2>\n";
@@ -41,9 +58,9 @@ class CachedCalendarTask extends HourlyTask {
 							echo "<p>Adding dates for event '$event->Title'</p>\n";
 							$cached = CachedCalendarEntry::create_from_datetime($dt, $calendar);
 							$cached->write();
-						}					
+						}
 					}
-				// Announcements								
+				// Announcements
 				}
 				foreach($c->Announcements() as $a) {
 					echo "<p>Adding announcement $a->Title</p>\n";

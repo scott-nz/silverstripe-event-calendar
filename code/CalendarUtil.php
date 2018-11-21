@@ -1,5 +1,10 @@
 <?php
 
+namespace Unclecheese\EventCalendar;
+
+use Altumo\Utils\sfDate\sfTime;
+
+
 class CalendarUtil {
 
 	const ONE_DAY = "OneDay";
@@ -50,9 +55,9 @@ class CalendarUtil {
 			date ('S', $start),
 			date ('n', $start),
 			date ('m', $start),
-			strftime('%b', $start), 
-			strftime('%B', $start), 
-			date ('y', $start), 
+			strftime('%b', $start),
+			strftime('%B', $start),
+			date ('y', $start),
 			date ('Y', $start),
 
 			strftime('%a', $end),
@@ -62,24 +67,24 @@ class CalendarUtil {
 			date ('S', $end),
 			date ('n', $end),
 			date ('m', $end),
-			strftime('%b', $end), 
-			strftime('%B', $end), 
-			date ('y', $end), 
+			strftime('%b', $end),
+			strftime('%B', $end),
+			date ('y', $end),
 			date ('Y', $end),
 
-		);	
+		);
 	}
-	
+
 	public static function localize($start, $end, $key) {
 		global $customDateTemplates;
 		if(is_array($customDateTemplates) && isset($customDateTemplates[$key]))
 			$template = $customDateTemplates[$key];
 		else {
-			$template = _t("Calendar.$key"); 
+			$template = _t("Calendar.$key");
 		}
-		
-		return str_replace(self::$format_character_placeholders, self::format_character_replacements($start,$end), $template);		
-	}	
+
+		return str_replace(self::$format_character_placeholders, self::format_character_replacements($start,$end), $template);
+	}
 
 	public static function get_date_from_string($str) {
 		$str = str_replace('-','',$str);
@@ -98,16 +103,16 @@ class CalendarUtil {
 	static function get_date_string($start_date,$end_date) {
 		$strStartDate = null;
 		$strEndDate = null;
-		
+
 		$start = strtotime($start_date);
 		$end = strtotime($end_date);
-		
+
 		$start_year = date("Y", $start);
 		$start_month = date("m", $start);
-		
+
 		$end_year = date("Y", $end);
 		$end_month = date("m", $end);
-		
+
 		// Invalid date. Get me out of here!
 		if($start < 1)	return;
 
@@ -115,7 +120,7 @@ class CalendarUtil {
 		else if($start == $end || !$end || $end < 1) {
 			$key = self::ONE_DAY;
 		}
-		
+
 		else {
 			if($start_year == $end_year) {
 				$key = ($start_month == $end_month) ? self::SAME_MONTH_SAME_YEAR : self::DIFF_MONTH_SAME_YEAR;
@@ -124,8 +129,8 @@ class CalendarUtil {
 				$key = self::DIFF_MONTH_DIFF_YEAR;
 			}
 		}
-		$date_string = self::localize($start, $end, $key);		
-		$break = strpos($date_string, '$End');		
+		$date_string = self::localize($start, $end, $key);
+		$break = strpos($date_string, '$End');
 		if($break !== FALSE) {
 			$strStartDate = substr($date_string, 0, $break);
 			$strEndDate = substr($date_string, $break+1, strlen($date_string) - strlen($strStartDate));
@@ -138,14 +143,14 @@ class CalendarUtil {
 	public static function microformat($date, $time, $offset = null) {
 		if(!$date)
 			return "";
-		
+
 		$ts = strtotime($date . " " . $time);
 
 		if($ts < 1)
 			return "";
-			
+
 		$ret = date('c', $ts); // ISO 8601 datetime
-		
+
 		if($offset) {
 			// Swap out timezine with specified $offset
 			$ret = preg_replace('/((\+)|(-))[\d:]*$/', $offset, $ret);
@@ -167,7 +172,7 @@ class CalendarUtil {
 	  		'10' => strftime($key,strtotime('2000-10-01')),
 	  		'11' => strftime($key,strtotime('2000-11-01')),
 	  		'12' => strftime($key,strtotime('2000-12-01'))
-	   );	
+	   );
 	}
 
 	public static function get_date_format() {
@@ -190,9 +195,9 @@ class CalendarUtil {
 	}
 
 	public static function date_sort(&$data) {
-			uasort($data, array("CalendarUtil","date_sort_callback"));
+			uasort($data, array(CalendarUtil::class,"date_sort_callback"));
 	}
-	
+
 	/**
 	 * Callback used by column_sort
 	 */
@@ -202,14 +207,14 @@ class CalendarUtil {
 				return 0;
 			else if(strtotime($a->StartTime) > strtotime($b->StartTime))
 				return 1;
-			else 
+			else
 				return -1;
 		}
 		else if(strtotime($a->StartDate) > strtotime($b->StartDate))
 			return 1;
-		else 
+		else
 			return -1;
-		
+
 	}
 
 }

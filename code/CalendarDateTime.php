@@ -1,17 +1,34 @@
 <?php
 
+namespace Unclecheese\EventCalendar;
+
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\DateField;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\TimeField;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Control\Controller;
+use SilverStripe\ORM\DataList;
+use Altumo\Utils\sfDate\sfDate;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
+use Unclecheese\EventCalendar\CalendarEvent;
+use Unclecheese\EventCalendar\CalendarAnnouncement;
+
+
+
 class CalendarDateTime extends DataObject {
-	
-	private static $db = array (		
+
+	private static $db = array (
 		'StartDate' => 'Date',
 		'StartTime' => 'Time',
 		'EndDate' => 'Date',
 		'EndTime' => 'Time',
-		'AllDay' => 'Boolean'		
+		'AllDay' => 'Boolean'
 	);
-	
+
 	private static $has_one = array (
-		'Event' => 'CalendarEvent'
+		'Event' => CalendarEvent::class
 	);
 
 	private static $date_format_override;
@@ -22,7 +39,7 @@ class CalendarDateTime extends DataObject {
 
 	/**
 	 * Set to the timezone offset (E.g. +12:00 for GMT+12). Must be in ISO 8601 format
-	 * 
+	 *
 	 * @config
 	 * @see http://php.net/manual/en/function.date.php
 	 * @var string
@@ -58,17 +75,17 @@ class CalendarDateTime extends DataObject {
 		return Controller::join_links($this->Event()->Link(),"?date=".$this->StartDate);
 	}
 
-	public function DateRange() {		
+	public function DateRange() {
 		list($strStartDate,$strEndDate) = CalendarUtil::get_date_string($this->StartDate,$this->EndDate);
-		$html =   "<span class='dtstart' title='".$this->MicroformatStart()."'>" . $strStartDate . "</span>"; 
+		$html =   "<span class='dtstart' title='".$this->MicroformatStart()."'>" . $strStartDate . "</span>";
 		$html .=	($strEndDate != "") ? "-" : "";
 		$html .= "<span class='dtend' title='" .$this->MicroformatEnd() ."'>";
 		$html .=    ($strEndDate != "") ? $strEndDate : "";
 		$html .=  "</span>";
-		
+
 		return $html;
 	}
-	
+
 	public function TimeRange() {
 		$func = CalendarUtil::get_time_format() == "24" ? "Nice24" : "Nice";
 		$ret = $this->obj('StartTime')->$func();
@@ -77,18 +94,18 @@ class CalendarDateTime extends DataObject {
 	}
 
 	public function Announcement() {
-		return $this->ClassName == "CalendarAnnouncement";
+		return $this->ClassName == CalendarAnnouncement::class;
 	}
 
 	public function OtherDates() {
 		if($this->Announcement()) {
 			return false;
 		}
-		
-		if($this->Event()->Recursion) {	
+
+		if($this->Event()->Recursion) {
 			return $this->Event()->Parent()->getNextRecurringEvents($this->Event(), $this);
 		}
-		
+
 		return DataList::create($this->class)
 			->where("EventID = {$this->EventID}")
 			->where("StartDate != '{$this->StartDate}'")
@@ -98,14 +115,14 @@ class CalendarDateTime extends DataObject {
 	public function MicroformatStart($offset = true) {
 		if(!$this->StartDate)
 			return "";
-			
+
 		$date = $this->StartDate;
-	
+
 		if($this->AllDay)
 			$time = "00:00:00";
 		else
 			$time = $this->StartTime ? $this->StartTime : "00:00:00";
-	
+
 		return CalendarUtil::microformat($date, $time, self::config()->offset);
 	}
 
@@ -127,7 +144,7 @@ class CalendarDateTime extends DataObject {
 	public function ICSLink() {
 		$ics_start = $this->obj('StartDate')->Format('Ymd')."T".$this->obj('StartTime')->Format('His');
 		if($this->EndDate) {
-			$ics_end = $this->obj('EndDate')->Format('Ymd')."T".$this->obj('EndTime')->Format('His'); 
+			$ics_end = $this->obj('EndDate')->Format('Ymd')."T".$this->obj('EndTime')->Format('His');
 		}
 		else {
 			$ics_end = $ics_start;
@@ -144,9 +161,9 @@ class CalendarDateTime extends DataObject {
 		else if($this->Announcement()) {
 			return Controller::join_links(
 				$this->Calendar()->Link(),
-				"ics","announcement-".$this->ID, 
+				"ics","announcement-".$this->ID,
 				$ics_start . "-" . $ics_end
-			); 
+			);
 		}
 		return Controller::join_links(
 			$this->Event()->Parent()->Link(),
@@ -160,7 +177,7 @@ class CalendarDateTime extends DataObject {
 	   if(!$this->StartDate) return "--";
 	   return CalendarUtil::get_date_format() == "mdy" ? $this->obj('StartDate')->Format('m-d-Y') : $this->obj('StartDate')->Format('d-m-Y');
 	}
-	
+
 	public function getFormattedEndDate() {
 	   if(!$this->EndDate) return "--";
 	   return CalendarUtil::get_date_format() == "mdy" ? $this->obj('EndDate')->Format('m-d-Y') : $this->obj('EndDate')->Format('d-m-Y');
@@ -198,8 +215,8 @@ class CalendarDateTime extends DataObject {
 		} while($start->get() <= $end->get());
 		return $dates;
 	}
-	
-	public function canCreate($member = null) {
+
+	public function canCreate($member = null, $context = array()) {
 		if (!$member) {
 			$member = Member::currentUser();
 		}

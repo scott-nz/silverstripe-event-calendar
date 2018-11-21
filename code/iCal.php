@@ -1,4 +1,9 @@
-<?php 
+<?php
+
+namespace Unclecheese\EventCalendar;
+
+
+ 
 class iCal {  
 
     private $ics_files = array(); 
