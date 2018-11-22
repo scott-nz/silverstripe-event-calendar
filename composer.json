@@ -15,8 +15,8 @@
     ],
     "require": {
         "php": ">=5.6",
-        "johngrogg/ics-parser": "^2.1",
-        "silverstripe/recipe-cms": "4.2.2",
+        "johngrogg/ics-parser": "v2.1.7",
+        "silverstripe/recipe-cms": "^4.2",
         "silverstripe/crontask": "^2.0"
     },
     "support": {
