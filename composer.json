@@ -23,21 +23,7 @@
         "issues": "https://github.com/unclecheese/silverstripe-event-calendar/issues"
     },
     "extra": {
-        "installer-name": "event_calendar",
-        "project-files-installed": [
-            "app/.htaccess",
-            "app/_config.php",
-            "app/_config/mysite.yml",
-            "app/src/Page.php",
-            "app/src/PageController.php"
-        ],
-        "public-files-installed": [
-            ".htaccess",
-            "index.php",
-            "install-frameworkmissing.html",
-            "install.php",
-            "web.config"
-        ]
+        "installer-name": "event_calendar"
     },
     "replace": {
         "silverstripe/event-calendar": "*"
