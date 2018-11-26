@@ -14,7 +14,7 @@ use SilverStripe\Forms\LabelField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\ORM\DataList;
-use Page_Controller;
+use PageController;
 use Unclecheese\EventCalendar\CalendarDateTime;
 use Unclecheese\EventCalendar\RecurringException;
 use Unclecheese\EventCalendar\RecurringDayOfWeek;
@@ -170,7 +170,7 @@ class CalendarEvent extends Page {
 
 }
 
-class CalendarEvent_Controller extends Page_Controller {
+class CalendarEventController extends PageController {
 
 	public function init() {
 		parent::init();

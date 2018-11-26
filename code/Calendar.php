@@ -17,7 +17,7 @@ use Altumo\Utils\sfDate\sfDate;
 use DateTime;
 use DateTimezone;
 use SilverStripe\Control\Controller;
-use Page_Controller;
+use PageController;
 use SilverStripe\Control\RSS\RSSFeed;
 use Altumo\Utils\sfDate\sfTime;
 use SilverStripe\Control\Director;
@@ -476,7 +476,7 @@ class Calendar extends Page {
 	public function CalendarWidget() {
 		$calendar = CalendarWidget::create($this);
 		$controller = Controller::curr();
-		if($controller->class == Calendar_Controller::class || is_subclass_of($controller, Calendar_Controller::class)) {
+		if($controller->class == CalendarController::class || is_subclass_of($controller, CalendarController::class)) {
 			if($controller->getView() != "default") {
 				if($startDate = $controller->getStartDate()) {
 					$calendar->setOption('start', $startDate->format('Y-m-d'));
@@ -491,16 +491,16 @@ class Calendar extends Page {
 
 	public function MonthJumpForm() {
 		$controller = Controller::curr();
-		if($controller->class == Calendar_Controller::class || is_subclass_of($controller, Calendar_Controller::class)) {
+		if($controller->class == CalendarController::class || is_subclass_of($controller, CalendarController::class)) {
 			return Controller::curr()->MonthJumpForm();
 		}
-		$c = new Calendar_Controller($this);
+		$c = new CalendarController($this);
 		return $c->MonthJumpForm();
 	}
 
 }
 
-class Calendar_Controller extends Page_Controller {
+class CalendarController extends PageController {
 
 	private static $allowed_actions = array (
 		'show',
