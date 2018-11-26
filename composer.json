@@ -1,6 +1,6 @@
 {
     "name": "unclecheese/event-calendar",
-    "type": "silverstripe-module",
+    "type": "silverstripe-vendormodule",
     "description": "Event Calendar for the SilverStripe CMS",
     "keywords": [
         "silverstripe",
@@ -16,14 +16,31 @@
     "require": {
         "php": ">=5.6",
         "johngrogg/ics-parser": "v2.1.7",
-        "silverstripe/recipe-cms": "^4.2",
+        "silverstripe/recipe-core": "^4.2",
         "silverstripe/crontask": "^2.0"
     },
     "support": {
         "issues": "https://github.com/unclecheese/silverstripe-event-calendar/issues"
     },
     "extra": {
-        "installer-name": "event_calendar"
+        "installer-name": "event_calendar",
+        "expose": [
+            "css",
+            "javascript",
+            "images"
+        ],
+        "project-files-installed": [
+            "app/.htaccess",
+            "app/_config.php",
+            "app/_config/mysite.yml"
+        ],
+        "public-files-installed": [
+            ".htaccess",
+            "index.php",
+            "install-frameworkmissing.html",
+            "install.php",
+            "web.config"
+        ]
     },
     "replace": {
         "silverstripe/event-calendar": "*"

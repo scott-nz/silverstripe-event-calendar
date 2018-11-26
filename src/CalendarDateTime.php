@@ -47,7 +47,6 @@ class CalendarDateTime extends DataObject {
 	private static $offset = "+00:00";
 
 	public function getCMSFields() {
-		DateField::set_default_config('showcalendar', true);
 		$f = new FieldList(
 			new DateField('StartDate',_t('CalendarDateTime.STARTDATE','Start date')),
 			new DateField('EndDate',_t('CalendarDateTime.ENDDATE','End date')),

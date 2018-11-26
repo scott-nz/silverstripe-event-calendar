@@ -143,7 +143,7 @@ class sfDate
     /**
      * Retrieve the timestamp value of this sfDate instance.
      *
-     * @return    timestamp
+     * @return int timestamp
      */
     public function get()
     {
@@ -211,8 +211,8 @@ class sfDate
     /**
      * Gets the difference of two date values in seconds.
      *
-     * @param    mixed    timestamp, string, or sfDate object
-     * @param    int        the difference in seconds
+     * @param mixed timestamp, string, or sfDate object
+     * @return int
      */
     public function diff($value)
     {
@@ -236,10 +236,10 @@ class sfDate
      */
     public function __call($method, $arguments)
     {
-        $callable = ['sfTime', $method];
+        $callable = [sfTime::class, $method];
 
         if (!is_callable($callable)) {
-            throw new sfDateTimeException(sprintf('Call to undefined function: %s::%s', 'sfDate', $method));
+            throw new sfDateTimeException(sprintf('Call to undefined function: %s::%s', sfTime::class, $method));
         }
 
         array_unshift($arguments, $this->ts);
