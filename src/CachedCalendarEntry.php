@@ -8,6 +8,8 @@ use SilverStripe\ORM\DataObject;
 
 class CachedCalendarEntry extends DataObject {
 
+    private static $table_name = 'CalendarCachedEntry';
+
 	 private static $db = array (
 		'StartDate' => 'Date',
 		'StartTime' => 'Time',

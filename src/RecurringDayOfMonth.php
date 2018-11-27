@@ -10,6 +10,8 @@ use SilverStripe\Security\Permission;
 
 class RecurringDayOfMonth extends DataObject {
 
+    private static $table_name = 'CalendarRecurringDayOfMonth';
+
 	private static $db = array (
 		'Value' => 'Int'
 	);

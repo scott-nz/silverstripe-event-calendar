@@ -19,6 +19,8 @@ use Unclecheese\EventCalendar\CalendarAnnouncement;
 
 class CalendarDateTime extends DataObject {
 
+    private static $table_name = 'CalendarDateTime';
+
 	private static $db = array (
 		'StartDate' => 'Date',
 		'StartTime' => 'Time',

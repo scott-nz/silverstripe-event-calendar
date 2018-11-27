@@ -11,6 +11,8 @@ use SilverStripe\Security\Permission;
 
 class RecurringDayOfWeek extends DataObject {
 
+    private static $table_name = 'CalendarRecurringDayOfWeek';
+
 	private static $db = array (
 		'Value' => 'Int'
 	);

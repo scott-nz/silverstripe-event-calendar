@@ -12,6 +12,8 @@ use Unclecheese\EventCalendar\CalendarEvent;
 
 class RecurringException extends DataObject {
 
+    private static $table_name = 'CalendarRecurringException';
+
 	private static $db = array (
 		'ExceptionDate' => 'Date'
 	);

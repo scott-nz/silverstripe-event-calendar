@@ -2,56 +2,63 @@
 
 namespace Unclecheese\EventCalendar;
 
-use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\TextareaField;
-use Unclecheese\EventCalendar\Calendar;
+use SilverStripe\Forms\TextField;
 
 
+class CalendarAnnouncement extends CalendarDateTime
+{
 
-class CalendarAnnouncement extends CalendarDateTime {
+    private static $table_name = 'CalendarAnnouncement';
 
-	private static $db = array (
-		'Title' => 'Varchar(255)',
-		'Content' => 'Text'
-	);
+    private static $db = array(
+        'Title' => 'Varchar(255)',
+        'Content' => 'Text'
+    );
 
-	private static $has_one = array (
-		'Calendar' => Calendar::class
-	);
+    private static $has_one = array(
+        'Calendar' => Calendar::class
+    );
 
-	public function getCMSFields() {
+    public function getCMSFields()
+    {
 
-		$self = $this;
+        $self = $this;
 
-		$this->beforeUpdateCMSFields(function($f) use ($self) {
+        $this->beforeUpdateCMSFields(function ($f) use ($self) {
 
-			$f->insertBefore(new TextField('Title', _t('CalendarAnnouncement.TITLE','Title of announcement')), "StartDate");
-			$f->insertBefore(new TextareaField('Content', _t('CalendarAnnouncement.CONTENT','Announcement content')), "StartDate");
+            $f->insertBefore(new TextField('Title', _t('CalendarAnnouncement.TITLE', 'Title of announcement')),
+                "StartDate");
+            $f->insertBefore(new TextareaField('Content', _t('CalendarAnnouncement.CONTENT', 'Announcement content')),
+                "StartDate");
 
-		});
+        });
 
-		$f = parent::getCMSFields();
+        $f = parent::getCMSFields();
 
-		return $f;
-	}
+        return $f;
+    }
 
-	public function summaryFields() {
-		return array (
-				'Title' => _t('CalendarAnnouncement.TITLE','Title of announcement'),
-				'FormattedStartDate' => _t('Calendar.STARTDATE','Start date'),
-				'FormattedEndDate' => _t('Calendar.ENDDATE','End date'),
-				'FormattedStartTime' => _t('Calendar.STARTTIME','Start time'),
-				'FormattedEndTime' => _t('Calendar.ENDTIME','End time'),
-				'FormattedAllDay' => _t('Calendar.ALLDAY','All day'),
-		);
-	}
+    public function summaryFields()
+    {
+        return array(
+            'Title' => _t('CalendarAnnouncement.TITLE', 'Title of announcement'),
+            'FormattedStartDate' => _t('Calendar.STARTDATE', 'Start date'),
+            'FormattedEndDate' => _t('Calendar.ENDDATE', 'End date'),
+            'FormattedStartTime' => _t('Calendar.STARTTIME', 'Start time'),
+            'FormattedEndTime' => _t('Calendar.ENDTIME', 'End time'),
+            'FormattedAllDay' => _t('Calendar.ALLDAY', 'All day'),
+        );
+    }
 
-	public function getTitle() {
-		return $this->getField('Title');
-	}
+    public function getTitle()
+    {
+        return $this->getField('Title');
+    }
 
-	public function getContent() {
-		return $this->getField('Content');
-	}
+    public function getContent()
+    {
+        return $this->getField('Content');
+    }
 
 }

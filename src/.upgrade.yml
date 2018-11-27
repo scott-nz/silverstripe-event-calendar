@@ -11,10 +11,10 @@ mappings:
   ICSWriter: Unclecheese\EventCalendar\ICSWriter
   RecurringDayOfMonth: Unclecheese\EventCalendar\RecurringDayOfMonth
   Calendar: Unclecheese\EventCalendar\Calendar
-  Calendar_Controller: Unclecheese\EventCalendar\Calendar_Controller
+  Calendar_Controller: Unclecheese\EventCalendar\CalendarController
   CalendarDateTime: Unclecheese\EventCalendar\CalendarDateTime
   CachedCalendarEntry: Unclecheese\EventCalendar\CachedCalendarEntry
   RecursionReader: Unclecheese\EventCalendar\RecursionReader
   iCal: Unclecheese\EventCalendar\iCal
   CalendarEvent: Unclecheese\EventCalendar\CalendarEvent
-  CalendarEvent_Controller: Unclecheese\EventCalendar\CalendarEvent_Controller
+  CalendarEvent_Controller: Unclecheese\EventCalendar\CalendarEventController
