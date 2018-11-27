@@ -46,7 +46,7 @@ class CalendarController extends \PageController {
         if(!Calendar::config()->jquery_included) {
             Requirements::javascript('/resources/vendor/components/jquery/jquery.js');
         }
-        Requirements::javascript('event_calendar/javascript/calendar.js');
+        Requirements::javascript('unclecheese/event-calendar: javascript/calendar.js');
     }
 
     public function getStartDate() {

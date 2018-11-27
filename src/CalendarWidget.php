@@ -46,11 +46,11 @@ class CalendarWidget extends ViewableData {
 
 	public function forTemplate() {
 		Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
-		Requirements::javascript("event_calendar/javascript/calendar_widget.js");
+		Requirements::javascript("unclecheese/event-calendar: javascript/calendar_widget.js");
 		$locale_file = _t('Calendar.DATEJSFILE','calendar_en.js');
-		Requirements::javascript("event_calendar/javascript/lang/{$locale_file}");
-		Requirements::javascript("event_calendar/javascript/calendar_widget_init.js");
-		Requirements::css("event_calendar/css/calendar_widget.css");
+		Requirements::javascript("unclecheese/event-calendar: javascript/lang/{$locale_file}");
+		Requirements::javascript("unclecheese/event-calendar: javascript/calendar_widget_init.js");
+		Requirements::css("unclecheese/event-calendar: css/calendar_widget.css");
 		return '<div class="calendar-widget" ' . $this->getDataAttributes() . '></div>';
 	}
 }

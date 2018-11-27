@@ -92,7 +92,7 @@ class Calendar extends \Page {
 
 		$this->beforeUpdateCMSFields(function($f) use ($self) {
 
-			Requirements::javascript('event_calendar/javascript/calendar_cms.js');
+			Requirements::javascript('unclecheese/event-calendar: javascript/calendar_cms.js');
 
 			$configuration = _t('Calendar.CONFIGURATION','Configuration');
 			$f->addFieldsToTab("Root.$configuration", array(

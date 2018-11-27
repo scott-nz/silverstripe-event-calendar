@@ -53,8 +53,8 @@ class CalendarEvent extends \Page {
 		$self = $this;
 
 		$this->beforeUpdateCMSFields(function(FieldList $f) use ($self) {
-			Requirements::javascript('event_calendar/javascript/calendar_cms.js');
-			Requirements::css('event_calendar/css/calendar_cms.css');
+			Requirements::javascript('unclecheese/event-calendar: javascript/calendar_cms.js');
+			Requirements::css('unclecheese/event-calendar: css/calendar_cms.css');
 
 			$f->addFieldToTab("Root.Main",
 				TextField::create(
